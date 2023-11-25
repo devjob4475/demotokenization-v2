@@ -32,7 +32,7 @@ export default function useHandleClick(props) {
           })
          .catch(error => {
           setState((prevData) => ({...prevData,alert: true,errordetail: error,}))
-         });
+         }); 
       }
     }
     return handleClick;

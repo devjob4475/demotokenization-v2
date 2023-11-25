@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 function provinces() {
     const [state, setState] = React.useContext(MyContext);
       useEffect(() => {
-    if (!state.data.length) {
+    if(state.data.length > 0) {
       fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT_LOGIN}/api1/Thailand-Tambon`)
         .then(response => response.json())
         .then(data => {
@@ -13,7 +13,8 @@ function provinces() {
         })
         .catch(error => console.error('Error fetching data: ', error));
     }
-  }, [state, setState]);
+  }, [state.data]);
+
   return null;
 }
 export default provinces

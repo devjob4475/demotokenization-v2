@@ -7,7 +7,6 @@ export default function Login(props) {
 
     useEffect(() => {
       if(state.btverify){
-        console.log("🚀 ~ file: sendemail.js:7 ~ Login ~ state:", state)
         setState((prevData) => ({ ...prevData, loading: true}));
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");

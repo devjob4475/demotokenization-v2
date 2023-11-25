@@ -6,7 +6,7 @@ import Layout from  '../../components/layout'
 import { themedata } from '../../data/themedata';
 import { frontdata } from '@/data/frontdata';
 import Title from '@/components/title';
-
+import DeveloperModeIcon from '@mui/icons-material/DeveloperMode';
 function Index() {
 
   return (
@@ -22,7 +22,10 @@ function Index() {
       mtemplaterow="0fr auto 0fr" mtemplateareas="'nav' 'content1' 'footer'"
         Content1={<Box>
           {/* <Mobile/> */}
-          <Box sx={{textAlign:"center",position:"absolute",height:"auto",top:"50%",left:"50%",transform:"translate(-50%,-50%)",display:"flex",alignItems:"center",fontFamily:frontdata[0].font,fontWeight:500,fontSize:"30px"}}>Under development or work in progress...</Box>
+          <Box sx={{width:"80%",display:"flex",flexDirection:"column",textAlign:"center",position:"absolute",height:"auto",top:"50%",left:"50%",transform:"translate(-50%,-50%)",display:"flex",alignItems:"center",fontFamily:frontdata[0].font,fontWeight:500,fontSize:"30px"}}>
+            
+            <DeveloperModeIcon sx={{fontSize:"40px",animation: "rotate 2s infinite linear" }}/><Box sx={{mt:2}}>Work in Progress: Mobile Version Coming Soon!</Box>
+          </Box>
         </Box>}/>
     </Box>
     </Box>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Button, Divider, IconButton, Switch, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -23,7 +23,6 @@ import Title from '@/components/title';
 import Image from 'next/image';
 import { border, styled } from '@mui/system';
 import CachedIcon from '@mui/icons-material/Cached';
-
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
 ))(({ theme }) => ({
@@ -52,7 +51,7 @@ const IOSSwitch = styled((props) => (
   },
   '& .MuiSwitch-track': {
     borderRadius: 36 / 2,
-    backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
+    backgroundColor: theme.palette.mode === 'light' ? '#fff' : '#39393D',
     opacity: 1,
     border: "2px solid #B3B5B4",
     transition: theme.transitions.create(['background-color'], {
@@ -60,6 +59,7 @@ const IOSSwitch = styled((props) => (
     }),
   },
 }));
+
 const IOSSwitchAccount = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
 ))(({ theme }) => ({
@@ -97,6 +97,43 @@ const IOSSwitchAccount = styled((props) => (
   },
 }));
 
+const IOSSwitchAccountDisable = styled((props) => (
+  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+))(({ theme }) => ({
+  width: 70,
+  height: 35,
+  padding: 4,
+  '& .MuiSwitch-switchBase': {
+    padding: -10,
+    marginLeft:2,
+    transitionDuration: '300ms',
+    '&.Mui-checked': {
+      transform: 'translateX(29px)',
+      color: '#fff',
+      '& + .MuiSwitch-track': {
+        backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#E9E9EA',
+        opacity: 1,
+        border: "2px solid #E9E9EA",
+      },
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    boxSizing: 'border-box',
+    width: 26,
+    height: 26,
+    margin:-3
+  },
+  '& .MuiSwitch-track': {
+    borderRadius: 36 / 2,
+    backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
+    opacity: 1,
+    border: "2px solid #fff",
+    transition: theme.transitions.create(['background-color'], {
+      duration: 500,
+    }),
+  },
+}));
+
 function Index() {
   const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
@@ -105,9 +142,24 @@ function Index() {
   const [showMaskAccount,setShowMaskAccount] = React.useState(false);
   const [info,setInfo] = React.useState(0);
   const [state, setState] = useContext(MyContext);
+  const [deleteStates, setDeleteStates] = useState({});
 
   const [Localalluser, setLocalAllUser] = React.useState([]);
-  const [personal, setPersonal] = React.useState([]);
+  const [personal, setPersonal] = React.useState({});
+
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'alluser') {
+        setLocalAllUser(JSON.parse(event.newValue));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []); 
 
 useEffect(() => {
   const items = JSON.parse(localStorage.getItem('alluser'));
@@ -115,6 +167,8 @@ useEffect(() => {
     setLocalAllUser(items);
   }
 }, []);
+
+
 
 useEffect(() => {
   const personaldata = JSON.parse(localStorage.getItem('decode_token'));
@@ -138,6 +192,11 @@ useEffect(() => {
     setShowMaskAccount(!showMaskAccount);
   };
   const handleDelete = (userId) => {
+
+    if (!deleteStates[userId]) {
+      setDeleteStates((prevStates) => ({ ...prevStates, [userId]: true }));
+      // ทำตามการลบข้อมูลของผู้ใช้ที่มี ID เท่ากับ userID
+    }
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var raw = JSON.stringify({
@@ -157,8 +216,7 @@ useEffect(() => {
           // localStorage.setItem("alluser", JSON.stringify(updatedAllUser));
 
           // setState(prevState => ({...prevState,btalluser:true,alluser: prevState.alluser.filter(user => user.ID !== userId)}))
-          setState((prevData) => ({ ...prevData, btalluser: true}));
-          window.location.reload()
+          setState((prevData) => ({ ...prevData, btalluser: true,btdelete:true}));
         }else{
           setState((prevData) => ({ ...prevData, alert: true,errordetail: result.message }));
         }
@@ -189,11 +247,11 @@ useEffect(() => {
   //   })),
   // }; 
 
-
+ 
   return (
       <Box  sx={{width:"100%",height:"100vh",background: `linear-gradient(108deg, ${themedata[0].primary} 0%, ${themedata[0].bgshadowwhite} 100%), linear-gradient(110deg, ${themedata[0].greenlight} -2.13%, ${themedata[0].greenblack} 102.03%), ${themedata[0].three}`,display:"flex",justifyContent:"center",flexDirection:"column",alignItems:"center",position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
         <Box position="absolute" sx={{width:"80%",height:"auto",top:"50%",left:"50%",transform:"translate(-50%,-50%)",display:"flex",flexDirection:"column"}}>
-        <Box sx={{display:'flex',ml:10}}>
+        <Box sx={{display:'flex',ml:10,mb:-0.5}}>
           <Box onClick={()=>{
             setInfo(0);
             setShowMaskAccount(false);
@@ -231,11 +289,15 @@ useEffect(() => {
               </Box>
                ))}
                <Box ml={-0.5} display="flex" alignItems="center" justifyContent="flex-start">
-                <IOSSwitch onClick={handleClickShowToken} sx={{ mt: 1 }} defaultChecked />
+                {personal.role === "admin" ?(
+                <IOSSwitch onClick={handleClickShowToken} sx={{ mt: 1 }}  defaultChecked />
+                ):(<IOSSwitchAccountDisable onClick={handleClickShowToken} sx={{ mt: 1 }} disabled  defaultChecked />)}
                 <Box sx={{ml:2,mt:1,fontFamily: frontdata[0].font,}}>Hide Information</Box>
                 </Box>
                <Box ml={-0.5} display="flex" alignItems="center" justifyContent="flex-start">
-                <IOSSwitch onClick={handleClickShowPassword} sx={{ mt: 1 }} defaultChecked />
+               {personal.role === "admin" ?(
+                <IOSSwitch onClick={handleClickShowPassword} sx={{ mt: 1 }}  defaultChecked />
+                ):(<IOSSwitchAccountDisable onClick={handleClickShowPassword} sx={{ mt: 1 }} disabled  defaultChecked />)}
                 <Box sx={{ml:2,mt:1,fontFamily: frontdata[0].font,}}>Tokenization</Box>
                 <Button sx={{ mt: 2,ml:"auto"}} variant='contained' onClick={() => { router.push('/login'); }} style={{ fontSize: '12px', padding: '12px 12px', backgroundColor: `${themedata[0].logout}`, width: '150px', height: 'auto', textTransform: 'capitalize', fontFamily: frontdata[0].font, color: `${themedata[0].three}` }}>{state.loading ? <Loading /> : "Logout"}</Button>
                 </Box>
@@ -243,9 +305,8 @@ useEffect(() => {
               ):(
                 <>
               <Box sx={{display:"flex",fontFamily: frontdata[0].font, fontWeight: '800',fontSize:"20px"}}>All User <Box sx={{display:"flex",alignItems:"center"}}><CachedIcon onClick={()=>{
-                setState((prevData) => ({ ...prevData,btalluser:true }));
-                window.location.reload()
-              }} sx={{cursor:"pointer",fontSize:"20px"}}/></Box></Box>
+                setState((prevData) => ({ ...prevData,btalluser:true,btreload:true }));
+              }} sx={{cursor:"pointer",fontSize:"20px",animation: state.btreload ? "rotate 2s infinite linear" : "none",}}/></Box></Box>
               <Divider sx={{mt:3,mb:3}}/>
               <table>
         			<tr style={{fontFamily: frontdata[0].font}}>
@@ -255,6 +316,7 @@ useEffect(() => {
         				<th></th>
         			</tr>
         		</table>
+            
             {personal.role==="admin" && Localalluser.map((user, index) => (
             <table key={`${index}`} className="gfg">
         			<tr style={{fontFamily: frontdata[0].font}}>
@@ -266,7 +328,11 @@ useEffect(() => {
                 </td>
         				<td>{showMaskAccount ?  showPasswordAcount ? user.FirstnameOriginal + ' ' + user.SurnameOriginal : user.Firstname + user.Surname : '********'}</td>
         				<td>{showMaskAccount ? user.Role : '********'}</td>
-        				<td><IconButton disabled={personal.role === "admin" ?false:true} onClick={() => handleDelete(user.ID)}>
+        				<td><IconButton sx={{
+          animation: deleteStates[user.ID]
+            ? "zoom 0.5s infinite linear"
+            : "none"
+        }}  disabled={personal.role === "admin" ?false:true} onClick={() => handleDelete(user.ID)}>
                  {showPasswordAcount ? (
                     <DeleteForeverIcon color={personal.role === "admin"? "error" : ""} />
                   ) : (
