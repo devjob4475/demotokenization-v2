@@ -17,10 +17,9 @@ function useEfotp() {
       fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT_GET}/api/users`, requestOptions)
         .then(response => response.json())
         .then(result => {
-          console.log("🚀 ~ file: useefgetalluser.js:20 ~ useEffect ~ result:", result)
           if(result){
             localStorage.setItem("alluser", JSON.stringify(result));
-            setState((prevData) => ({ ...prevData, alluser: result }));
+            setState((prevData) => ({ ...prevData, alluser: result,btalluser:false }));
           }else{
             setState((prevData) => ({ ...prevData, alert: true,errordetail: result.message }));
           }
@@ -28,7 +27,7 @@ function useEfotp() {
         .catch(error => console.log('error', error));
     
     }
-  }, [state.btalluser]);
+  }, [state.btalluser,setState]);
 
 
 

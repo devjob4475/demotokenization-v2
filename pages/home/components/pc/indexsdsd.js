@@ -22,6 +22,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Title from '@/components/title';
 import Image from 'next/image';
 import { border, styled } from '@mui/system';
+import CachedIcon from '@mui/icons-material/Cached';
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -241,7 +242,10 @@ useEffect(() => {
               </>
               ):(
                 <>
-              <Box sx={{fontFamily: frontdata[0].font, fontWeight: '800',fontSize:"20px"}}>All User</Box>
+              <Box sx={{display:"flex",fontFamily: frontdata[0].font, fontWeight: '800',fontSize:"20px"}}>All User <Box sx={{display:"flex",alignItems:"center"}}><CachedIcon onClick={()=>{
+                setState((prevData) => ({ ...prevData,btalluser:true }));
+                window.location.reload()
+              }} sx={{cursor:"pointer",fontSize:"20px"}}/></Box></Box>
               <Divider sx={{mt:3,mb:3}}/>
               <table>
         			<tr style={{fontFamily: frontdata[0].font}}>
